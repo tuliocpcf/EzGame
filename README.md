@@ -1,2 +1,2 @@
-# InsperBird
-Jogo semelhante ao Flappy Bird.
+# EzGame
+Jogo de plataforma "fácil".
