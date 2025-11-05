@@ -14,7 +14,7 @@ WIDTH = 480 # Largura da tela
 HEIGHT = 600 # Altura da tela
 TILE_SIZE = 40 # Tamanho de cada tile (cada tile é um quadrado)
 PLAYER_WIDTH = TILE_SIZE
-PLAYER_HEIGHT = int(TILE_SIZE * 1.5)
+PLAYER_HEIGHT = TILE_SIZE 
 FPS = 60 # Frames por segundo
 
 # Imagens
@@ -174,11 +174,35 @@ class Player(pygame.sprite.Sprite):
             self.speedy -= JUMP_SIZE
             self.state = JUMPING
 
+class Move (pygame.sprite.Sprite):
+    def __init__(self, center, assets):
+        pygame.sprite.Sprite.__init__(self)
+        self.move_anim = ['individual_sheets\male_hero_template-design.png']
+        self.frame = 0
+        self.image = self.explosion_anim[self.frame]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.last_update = pygame.time.get_ticks()
+        self.frame_ticks = 50
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > self.frame_ticks:
+            self.last_update = now
+            self.frame += 1
+
+            if self.frame == len(self.explosion_anim):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = self.move_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
 
 # Carrega todos os assets de uma vez.
 def load_assets(img_dir):
     assets = {}
-    assets[PLAYER_IMG] = pygame.image.load(path.join(img_dir, 'hero-single.png')).convert_alpha()
+    assets[PLAYER_IMG] = pygame.image.load(path.join(img_dir, 'male_hero_template-design.png')).convert_alpha()
     assets[BLOCK] = pygame.image.load(path.join(img_dir, 'tile-block.png')).convert()
     return assets
 

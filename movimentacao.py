@@ -13,7 +13,7 @@ pygame.display.set_caption('Easy Game')
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('mens-locker-room-155828_1280.png').convert_alpha()
+        self.image = pygame.image.load('img\individual_sheets\male_hero_template-combo_1_end.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (60, 48))
         self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
