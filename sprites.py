@@ -116,12 +116,6 @@ class StartScreen:
         btn_norm = pg.image.load("assets/img/Botao.png").convert_alpha()
         btn_hover = pg.image.load("assets/img/Botao_Clicado.png").convert_alpha()
 
-        # === Som de fundo ===
-        pg.mixer.init()
-        pg.mixer.music.load("assets/snd/SoundTrack1.mp3")
-        pg.mixer.music.set_volume(0.5)
-        pg.mixer.music.play(-1)  # toca em loop
-
         MAX_W, MAX_H = 920, 425
         self.start_btn_image = scale_to_fit(btn_norm, MAX_W, MAX_H)
         self.start_btn_image_hover = scale_to_fit(btn_hover, MAX_W, MAX_H)
@@ -172,12 +166,12 @@ class StartScreen:
         self.screen.blit(self.bg_image, (0, 0))
 
         # Título
-        title_surf = self.title_font.render(TITLE, True, (226,199,92))
+        title_surf = self.title_font.render(TITLE, True, (BLACK))
         title_rect = title_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
         self.screen.blit(title_surf, title_rect)
 
         # Subtítulo
-        subtitle_surf = self.subtitle_font.render(SUBTITLE, True, (226,199,92))
+        subtitle_surf = self.subtitle_font.render(SUBTITLE, True, (BLACK))
         subtitle_rect = subtitle_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2))
         self.screen.blit(subtitle_surf, subtitle_rect)
 
