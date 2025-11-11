@@ -8,7 +8,7 @@ class Game:
     def __init__(self, screen):
         # pg.init() não é mais necessário aqui, já foi chamado
         self.screen = screen # Recebe a tela
-        pg.display.set_caption("Meu Jogo de Plataforma")
+        pg.display.set_caption("EzGame")
         self.clock = pg.time.Clock()
         self.running = True
         
@@ -104,25 +104,54 @@ class Game:
 
 # --- 2. MUDANÇA: Bloco principal agora gerencia as cenas ---
 if __name__ == "__main__":
-    pg.init() # Inicia o Pygame UMA VEZ
-    
-    # Cria a tela UMA VEZ
+    pg.mixer.pre_init(44100, -16, 2, 512)
+    pg.init()
+    pg.mixer.init()
+
     screen = pg.display.set_mode((WIDTH, HEIGHT))
-    
-    # --- Cena 1: Tela Inicial ---
-    start_screen = StartScreen(screen)
-    start_screen.run() # Roda o loop da tela inicial
-    
-    # O loop acima só termina quando self.running de StartScreen vira False.
-    # Agora checamos se foi porque o jogador clicou em "JOGAR"
-    
-    if start_screen.start_game:
-        # --- Cena 2: O Jogo Principal ---
-        g = Game(screen) # Passa a tela já criada para o jogo
-        g.run() # Roda o loop do jogo
-    
-    # Se start_screen.start_game for False, significa que o usuário
-    # fechou a janela na tela inicial, então o programa simplesmente
-    # pulará para o pg.quit().
-    
+
+    # Carrega e inicia a trilha UMA VEZ
+    # Recomendo .ogg pela estabilidade no pygame
+    pg.mixer.music.load("assets/snd/SoundTrack1.mp3")
+    pg.mixer.music.set_volume(0.60)
+    pg.mixer.music.play(-1)  # loop
+
+    state = "menu"   # "menu" -> "instr" -> "game"
+    app_running = True
+    clock = pg.time.Clock()
+
+    while app_running:
+        if state == "menu":
+            start_screen = StartScreen(screen)
+            start_screen.run()  # loop da tela inicial
+            pg.mixer.music.set_volume(0.60)
+
+            if start_screen.start_game:
+                # usuário clicou JOGAR -> vai para instruções
+                start_screen.start_game = False
+                state = "instr"
+            else:
+                # usuário fechou a janela na tela inicial
+                app_running = False
+
+        elif state == "instr":
+            instrucoes_screen = InstructionScreen(screen)
+            resultado = instrucoes_screen.run()
+            pg.mixer.music.set_volume(0.50)
+
+            if resultado == "next":
+                state = "game"
+            elif resultado == "back":
+                state = "menu"
+
+        elif state == "game":
+            g = Game(screen)
+            g.run()
+            pg.mixer.music.set_volume(0.40)
+            # quando o jogo terminar (win/escape próprio do jogo), volta ao menu
+            state = "menu"
+
+        # mantém 60 fps no loop do app
+        clock.tick(60)
+
     pg.quit()

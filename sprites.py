@@ -2,6 +2,12 @@ import sys
 import pygame as pg
 from config import *
 
+def scale_to_fit(surf, max_w, max_h, smooth=True):
+    w, h = surf.get_size()
+    scale = min(max_w / w, max_h / h)
+    new_size = (int(w * scale), int(h * scale))
+    return pg.transform.smoothscale(surf, new_size) if smooth else pg.transform.scale(surf, new_size)
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game, start_pos):
         pg.sprite.Sprite.__init__(self)
@@ -90,12 +96,6 @@ class Spike(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
-def scale_to_fit(surf, max_w, max_h, smooth=True):
-    w, h = surf.get_size()
-    scale = min(max_w / w, max_h / h)
-    new_size = (int(w * scale), int(h * scale))
-    return pg.transform.smoothscale(surf, new_size) if smooth else pg.transform.scale(surf, new_size)
-
 class StartScreen:
     def __init__(self, screen):
         self.screen = screen
@@ -115,6 +115,12 @@ class StartScreen:
         # Botões
         btn_norm = pg.image.load("assets/img/Botao.png").convert_alpha()
         btn_hover = pg.image.load("assets/img/Botao_Clicado.png").convert_alpha()
+
+        # === Som de fundo ===
+        pg.mixer.init()
+        pg.mixer.music.load("assets/snd/SoundTrack1.mp3")
+        pg.mixer.music.set_volume(0.5)
+        pg.mixer.music.play(-1)  # toca em loop
 
         MAX_W, MAX_H = 920, 425
         self.start_btn_image = scale_to_fit(btn_norm, MAX_W, MAX_H)
@@ -160,6 +166,7 @@ class StartScreen:
                 if self._point_on_button(event.pos):
                     self.start_game = True # <-- 4. MUDAR AQUI
                     self.running = False   # <-- 4. MUDAR AQUI
+
     def draw(self):
         # Fundo
         self.screen.blit(self.bg_image, (0, 0))
@@ -184,3 +191,34 @@ class StartScreen:
             self.draw()
             pg.display.flip()
             self.clock.tick(60) 
+
+class InstructionScreen:
+    def __init__(self, screen, next_signal="next"):
+        self.screen = screen
+        self.clock = pg.time.Clock()
+        self.running = True
+        self.next_signal = next_signal
+
+        # === Background fixo ===
+        self.bg_image = pg.image.load("assets/img/Instructions.png").convert()
+        self.bg_image = pg.transform.smoothscale(self.bg_image, (WIDTH, HEIGHT))
+
+    def run(self):
+        while self.running:
+            self.clock.tick(60)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit(0)
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        self.running = False
+                        return "back"
+                    if event.key in (pg.K_RETURN, pg.K_KP_ENTER):
+                        self.running = False
+                        return self.next_signal
+
+            # === Desenho da tela ===
+            self.screen.blit(self.bg_image, (0, 0))
+
+            pg.display.flip()
