@@ -5,26 +5,14 @@ import pygame as pg
 from config import *
 from os import path
 
+# Carrega os frames de animaçao
 def load_animation_frames(folder_path, scale=1.0):
     frames = []
     animation_name = path.basename(folder_path) 
     
-    # Adicione este print para ver o que o código está procurando!
-    print(f"Buscando frames na pasta: {folder_path}")
-    
     for i in range(100):
-        # Opção B: Assumindo nomes de arquivo como 'fire_0.png', 'idle_0.png', etc.
         frame_name = path.join(folder_path, f'{animation_name}_{i}.png')
         
-        # DEBUG: Imprima o caminho do primeiro arquivo que ele tenta carregar
-        if i == 0:
-            print(f"Tentativa de arquivo 0: {frame_name}")
-        
-        if not path.exists(frame_name):
-            # Se não encontrou o primeiro arquivo (i=0), a lista 'frames' estará vazia.
-            if i == 0:
-                 print(f"ERRO: Não encontrou NENHUM frame. Verifique o caminho e o nome do arquivo '{frame_name}'")
-            break
         img = pg.image.load(frame_name).convert_alpha()
         if scale != 1.0:
             img = pg.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
@@ -33,31 +21,33 @@ def load_animation_frames(folder_path, scale=1.0):
         frames.append(img)
     return frames
 
+# Formatacao do Botao
 def scale_to_fit(surf, max_w, max_h, smooth=True):
     w, h = surf.get_size()
     scale = min(max_w / w, max_h / h)
     new_size = (int(w * scale), int(h * scale))
     return pg.transform.smoothscale(surf, new_size) if smooth else pg.transform.scale(surf, new_size)
 
+# Player
 class Player(pg.sprite.Sprite):
     def __init__(self, game, start_pos):
         pg.sprite.Sprite.__init__(self)
         self.game = game
 
-        # --- Animação ---
+        # Animação
         self.animations = self.game.player_animations 
         self.current_animation = 'idle'
         self.current_frame = 0
         self.last_update = pg.time.get_ticks()
-        self.frame_rate = 100 # ms por frame (ajuste para mais rápido/lento)
-        self.facing = 'right' # 'left' ou 'right'
-        self.is_dying = False # Flag para animação de morte
+        self.frame_rate = 100 
+        self.facing = 'right' 
+        self.is_dying = False 
 
         # Define a imagem inicial
         self.image = self.animations[self.current_animation][self.current_frame]
         
         self.rect = pg.Rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)
-        self.rect.topleft = start_pos # Posiciona o rect
+        self.rect.topleft = start_pos 
 
         self.vel = pg.math.Vector2(0, 0)
         self.on_ground = False
@@ -68,23 +58,22 @@ class Player(pg.sprite.Sprite):
         if now - self.last_update > self.frame_rate:
             self.last_update = now
 
-            # 🛑 Se já estamos no último frame de MORTE, TRAVAMOS AQUI
+            # Se já estamos no último frame de morte, travamos aqui
             if self.is_dying and self.current_frame == len(self.animations['die']) - 1:
-                pass # Não avança
+                pass 
             else:
                 # Para todas as outras animações, faz o loop normal
                 self.current_frame = (self.current_frame + 1) % len(self.animations[self.current_animation])
 
-            # Obtém a nova imagem (restante do código...)
+            # Nova imagem 
             self.image = self.animations[self.current_animation][self.current_frame]
 
             # Inverte a imagem se estiver indo para a esquerda
             if self.facing == 'left':
-                # ✅ NOVO: Aplica a inversão diretamente na imagem recém-selecionada (que já está no tamanho correto)
                 self.image = pg.transform.flip(self.image, True, False)
 
     def jump(self):
-        # 🛑 MUDANÇA: Sair da função se estiver morrendo
+        # Sai da função se estiver morrendo
         if self.is_dying:
             return
             
@@ -102,19 +91,16 @@ class Player(pg.sprite.Sprite):
             self.frame_rate = 150 # Pode ser mais lento para morte
             self.game.run_channel.stop() # Para o som de andar
 
-    # sprites.py (Dentro da classe Player)
-
     def update(self):
-        # 🛑 1. PRIORIADE MÁXIMA: ESTADO DE MORTE
         # Se estiver morrendo, anula movimento, zera velocidade e apenas anima.
         if self.is_dying:
             self.vel.x = 0
             self.vel.y = 0
             
             self.animate()
-            return # Sai do update para pular a física e colisão
+            return 
         
-        # --- (Início da Física e Movimento Normal) ---
+        # Física e Movimento Normal
         
         # Gravidade
         self.vel.y += GRAVITY
@@ -142,11 +128,8 @@ class Player(pg.sprite.Sprite):
                 self.current_animation = 'idle'
                 self.frame_rate = ANIM_FRAME_RATE
     
-        # Animação de Pulo/Queda (só se não estiver no chão E NÃO ESTIVER MORRENDO)
-        # O 'jump' só é definido uma vez em self.jump(). Se estiver no ar, mantemos o estado.
+
         if not self.on_ground and self.current_animation != 'jump': 
-            # Esta lógica só deve forçar a animação se a velocidade de queda for muito alta 
-            # (no caso de queda) ou se o estado foi perdido, mas não se estiver morrendo.
             self.current_animation = 'jump'
     
         # Lógica de som de andar
@@ -157,7 +140,7 @@ class Player(pg.sprite.Sprite):
         else:
             self.game.run_channel.stop()
 
-        # 🛑 2. APLICAÇÃO DE MOVIMENTO E COLISÃO
+        # Movimento e Colisao
         
         self.rect.x += self.vel.x
         self.collide_with_platforms('horizontal') 
@@ -165,7 +148,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y += self.vel.y
         self.collide_with_platforms('vertical') 
         
-        # 🛑 3. REAJUSTE DE RECT E ANIMAÇÃO
+        # Reajuste de Rect E Animacao
         
         old_bottom = self.rect.bottom 
         old_centerx = self.rect.centerx
@@ -195,7 +178,7 @@ class Player(pg.sprite.Sprite):
                     self.rect.top = hits[0].rect.bottom
                 self.vel.y = 0
 
-            # 🛑 NOVO: Só mude a animação ao pousar se NÃO estiver morrendo
+            # Só mude a animação ao pousar se nao estiver morrendo
             if direction == 'vertical' and self.vel.y > 0:
                 self.on_ground = True
                 if not self.is_dying: 
@@ -204,7 +187,7 @@ class Player(pg.sprite.Sprite):
                         self.current_frame = 0 # Reinicia a animação
     
     def die(self):
-        # O estado de morte só é iniciado UMA VEZ
+        # O estado de morte só é iniciado uma vez
         if not self.is_dying:
             self.is_dying = True
             self.current_animation = 'die'
@@ -212,22 +195,25 @@ class Player(pg.sprite.Sprite):
             self.frame_rate = 150 # Pode ser mais lento para morte
             self.game.run_channel.stop() # Para o som de andar
 
+# Plataformas
 class Platform(pg.sprite.Sprite):
     def __init__(self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill(RED_HELL)
+        self.image.fill(RED_HELL) # Cor
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
+# Objetivo
 class Goal(pg.sprite.Sprite):
     def __init__(self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w, h))
-        self.image.fill(YELLOW)
+        self.image.fill(YELLOW) # Cor
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
 
+# Fogo
 class Fire(pg.sprite.Sprite):
     def __init__(self, game, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
@@ -235,7 +221,7 @@ class Fire(pg.sprite.Sprite):
         self.animations = game.fire_animation 
         self.current_frame = 0
         self.last_update = pg.time.get_ticks()
-        self.frame_rate = 150 # ms por frame (ajuste)
+        self.frame_rate = 150 
 
         # Define a imagem inicial e ajusta o rect
         self.image = pg.transform.scale(self.animations[self.current_frame], (w, h))
@@ -249,9 +235,10 @@ class Fire(pg.sprite.Sprite):
             self.last_update = now
             self.current_frame = (self.current_frame + 1) % len(self.animations)
 
-            # Atualiza a imagem, mantendo o tamanho original
+            # Atualiza a imagem
             self.image = pg.transform.scale(self.animations[self.current_frame], self.rect.size)
 
+# Tela Inicial
 class StartScreen:
     def __init__(self, screen):
         self.screen = screen
@@ -276,7 +263,7 @@ class StartScreen:
         self.start_btn_image = scale_to_fit(btn_norm, MAX_W, MAX_H)
         self.start_btn_image_hover = scale_to_fit(btn_hover, MAX_W, MAX_H)
 
-        # Área clicável ajustada ao tamanho do botão
+        # Área clicável para o botão iniciar
         self.start_btn_rect = self.start_btn_image.get_rect()  
         self.start_btn_rect.center = (WIDTH // 2, HEIGHT // 2 + 120)
 
@@ -284,19 +271,19 @@ class StartScreen:
 
         self._is_hover = False
 
-    # >>> NEW: helper para saber se o mouse está sobre a parte "opaca" do botão
     def _point_on_button(self, pos):
         if not self.start_btn_rect.collidepoint(pos):
             return False
         rel_x = pos[0] - self.start_btn_rect.left
         rel_y = pos[1] - self.start_btn_rect.top
-        # Proteção extra caso coordenadas fiquem na borda
+        # Proteção caso coordenadas fiquem na borda
         if rel_x < 0 or rel_y < 0:
             return False
         if rel_x >= self.start_btn_mask.get_size()[0] or rel_y >= self.start_btn_mask.get_size()[1]:
             return False
         return self.start_btn_mask.get_at((rel_x, rel_y)) != 0
 
+        # Eventos
     def handle_events(self):
         mouse_pos = pg.mouse.get_pos()
         self._is_hover = self.start_btn_rect.collidepoint(mouse_pos)
@@ -304,22 +291,21 @@ class StartScreen:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
-                self.start_game = False # Sinaliza que não é para iniciar o jogo
+                self.start_game = False 
                 
-            # NOVO: Teclas para iniciar e fechar
+            # Teclas para iniciar e fechar
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.running = False
-                    self.start_game = False # Sinaliza que não é para iniciar o jogo
+                    self.start_game = False 
                     
-                # 🛑 MUDANÇA AQUI: Adiciona ENTER (K_RETURN) e ESPAÇO
                 if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
                     self.running = False
-                    self.start_game = True # Inicia o jogo / vai para a próxima tela
+                    self.start_game = True 
 
-            # Botão de clique (mouse)
+            # Botão do mouse
             if event.type == pg.MOUSEBUTTONDOWN:
-                if self._is_hover and event.button == 1: # 1 = Botão esquerdo
+                if self._is_hover and event.button == 1: 
                     self.running = False
                     self.start_game = True
 
@@ -348,6 +334,7 @@ class StartScreen:
             pg.display.flip()
             self.clock.tick(60) 
 
+# Tela de Instrucoes
 class InstructionScreen:
     def __init__(self, screen, next_signal="next"):
         self.screen = screen
@@ -355,7 +342,7 @@ class InstructionScreen:
         self.running = True
         self.next_signal = next_signal
 
-        # === Background fixo ===
+        # Background 
         self.bg_image = pg.image.load("assets/img/Instructions.png").convert()
         self.bg_image = pg.transform.smoothscale(self.bg_image, (WIDTH, HEIGHT))
 
@@ -374,7 +361,6 @@ class InstructionScreen:
                         self.running = False
                         return self.next_signal
 
-            # === Desenho da tela ===
             self.screen.blit(self.bg_image, (0, 0))
 
             pg.display.flip()

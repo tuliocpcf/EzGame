@@ -14,24 +14,23 @@ TITLE = "EzGame"
 SUBTITLE = "Pressione ENTER ou clique em JOGAR"
 WIDTH = 1024  # Largura da tela
 HEIGHT = 576  # Altura da tela
-FPS = 60      # Frames por segundo
+FPS = 60      
 
 # Pontuação
 BASE_SCORE = 5000 
 SCORE_LOSS_RATE = 10  # Pontos perdidos a cada segundo (1 pontos / 0.1s = 10 pontos por segundo) 
-# Note: 1 ponto perdido a cada 0.1 segundos é 10 pontos perdidos por segundo.
 
-# Config player
+# Player Config
 PLAYER_WIDTH = 30   # Largura do Player
 PLAYER_HEIGHT = 40  # Altura do Player
 PLAYER_VEL = 5      # Velocidade de movimento
 GRAVITY = 0.8       # Aceleração da gravidade
-PLAYER_JUMP = -14   # Força do pulo (negativo porque Y aumenta para baixo)
+PLAYER_JUMP = -14   # Força do pulo 
 SOUND_JUMP = path.join(SND_DIR, 'jump.flac') 
 SOUND_WALK = path.join(SND_DIR, 'run.flac') 
-ANIM_FRAME_RATE = 500       # Taxa padrão (ms) - Bom para 'idle' e 'die'
-ANIM_RUN_RATE = 70          # Taxa de corrida (ms) - Mais rápido!
-ANIM_JUMP_RATE = 150       # Pulo/Queda (ms)
+ANIM_FRAME_RATE = 500       
+ANIM_RUN_RATE = 70          
+ANIM_JUMP_RATE = 150       
 
 # Cores
 WHITE = (255, 255, 255)
@@ -41,9 +40,9 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 GREY = (128, 128, 128)
-RED_HELL = (150, 0, 0) # Cor principal para plataformas
-ORANGE_HELL = (255, 100, 0) # Fogo/Spikes
-BLACK_HELL = (30, 0, 0) # Cor para teto e paredes
+RED_HELL = (150, 0, 0) 
+ORANGE_HELL = (255, 100, 0) 
+BLACK_HELL = (30, 0, 0) 
 
 # Mapas das Fases
 # 'platforms': blocos de colisão normal (x, y, largura, altura)
@@ -52,16 +51,16 @@ BLACK_HELL = (30, 0, 0) # Cor para teto e paredes
 # 'goal': objetivo (x, y, largura, altura)
 
 LEVEL_1 = {
-    # Paredes Estéticas Finas (20px)
+    # Moldura
     'platforms': [
-        (0, HEIGHT - 20, WIDTH, 20),         # Chão (Base)
-        (0, 0, WIDTH, 20),                   # Teto
-        (0, 20, 20, HEIGHT - 40),            # Parede Esquerda
-        (WIDTH - 20, 20, 20, HEIGHT - 40),   # Parede Direita
+        (0, HEIGHT - 20, WIDTH, 20),         
+        (0, 0, WIDTH, 20),                   
+        (0, 20, 20, HEIGHT - 40),            
+        (WIDTH - 20, 20, 20, HEIGHT - 40),   
         
         # Plataformas de Movimentação
-        (250, HEIGHT - 120, 150, 20),        # Plataforma 1
-        (550, HEIGHT - 220, 150, 20),        # Plataforma 2
+        (250, HEIGHT - 120, 150, 20),       
+        (550, HEIGHT - 220, 150, 20),       
     ],
 
     'start': (60, HEIGHT - 60),
@@ -69,15 +68,15 @@ LEVEL_1 = {
 }
 
 LEVEL_2 = {
-    # Paredes Estéticas Finas
+    # Moldura
     'platforms': [
-        (0, HEIGHT - 20, WIDTH, 20),         # Chão (Base)
-        (0, 0, WIDTH, 20),                   # Teto
-        (0, 20, 20, HEIGHT - 40),            # Parede Esquerda
-        (WIDTH - 20, 20, 20, HEIGHT - 40),   # Parede Direita
+        (0, HEIGHT - 20, WIDTH, 20),       
+        (0, 0, WIDTH, 20),                   
+        (0, 20, 20, HEIGHT - 40),            
+        (WIDTH - 20, 20, 20, HEIGHT - 40),   
         
         # Plataformas
-        (120, HEIGHT - 135, 200, 20),        # Batedor de cabeça
+        (120, HEIGHT - 135, 200, 20),        
         (520, HEIGHT - 135, 200, 20),
         (20, HEIGHT - 385, 850, 20),
         (850, HEIGHT - 240, 50, 20),
@@ -102,31 +101,31 @@ LEVEL_2 = {
 LEVEL_3 = {
     # Paredes Estéticas Finas
     'platforms': [
-        (0, HEIGHT - 20, WIDTH, 20),         # Chão
-        (0, 0, WIDTH, 20),                   # Teto
-        (0, 20, 20, HEIGHT - 40),            # Parede Esquerda
-        (WIDTH - 20, 20, 20, HEIGHT - 40),   # Parede Direita
+        (0, HEIGHT - 20, WIDTH, 20),         
+        (0, 0, WIDTH, 20),                   
+        (0, 20, 20, HEIGHT - 40),            
+        (WIDTH - 20, 20, 20, HEIGHT - 40),   
         
         # Degraus
-        (100, HEIGHT - 110, 100, 20),         # Degrau 1
-        (250, HEIGHT - 200, 100, 20),        # Degrau 2
-        (400, HEIGHT - 290, 100, 20),        # Degrau 3
-        (550, HEIGHT - 380, 100, 20),        # Degrau 4
+        (100, HEIGHT - 110, 100, 20),         
+        (250, HEIGHT - 200, 100, 20),        
+        (400, HEIGHT - 290, 100, 20),        
+        (550, HEIGHT - 380, 100, 20),        
         
-        (700, HEIGHT - 470, 200, 20),                 # Plataforma do Objetivo
+        (700, HEIGHT - 470, 200, 20),                 
     ],
     # Fogo: No topo de cada degrau e no chão
     'spikes': [
-        (140, HEIGHT - 130, 20, 20),         # Fogo no Degrau 1
+        (140, HEIGHT - 130, 20, 20),         
         (160, HEIGHT - 130, 20, 20),
         
-        (290, HEIGHT - 220, 20, 20),         # Fogo no Degrau 2
+        (290, HEIGHT - 220, 20, 20),         
         (310, HEIGHT - 220, 20, 20),
         
-        (440, HEIGHT - 310, 20, 20),         # Fogo no Degrau 3
+        (440, HEIGHT - 310, 20, 20),         
         (460, HEIGHT - 310, 20, 20),
 
-        (590, HEIGHT - 400, 20, 20),         # Fogo no Degrau 4
+        (590, HEIGHT - 400, 20, 20),         
         (610, HEIGHT - 400, 20, 20),
         
         # Fogo no chão
@@ -137,12 +136,12 @@ LEVEL_3 = {
 }
 
 LEVEL_4 = {
-    # Paredes Estéticas Finas
+    # Moldura
     'platforms': [
-        (0, HEIGHT - 20, WIDTH, 20),         # Chão
-        (0, 0, WIDTH, 20),                   # Teto
-        (0, 20, 20, HEIGHT - 40),            # Parede Esquerda
-        (WIDTH - 20, 20, 20, HEIGHT - 40),   # Parede Direita
+        (0, HEIGHT - 20, WIDTH, 20),         
+        (0, 0, WIDTH, 20),                   
+        (0, 20, 20, HEIGHT - 40),            
+        (WIDTH - 20, 20, 20, HEIGHT - 40),   
         
         (20, HEIGHT - 456, 100, 20),
         (220, HEIGHT - 556, 20, 356),
@@ -167,12 +166,12 @@ LEVEL_4 = {
 }
 
 LEVEL_5 = {
-    # Paredes Estéticas Finas
+    # Moldura
     'platforms': [
-        (0, HEIGHT - 20, WIDTH, 20),         # Chão
-        (0, 0, WIDTH, 20),                   # Teto
-        (0, 20, 20, HEIGHT - 40),            # Parede Esquerda
-        (WIDTH - 20, 20, 20, HEIGHT - 40),   # Parede Direita
+        (0, HEIGHT - 20, WIDTH, 20),         
+        (0, 0, WIDTH, 20),                   
+        (0, 20, 20, HEIGHT - 40),            
+        (WIDTH - 20, 20, 20, HEIGHT - 40),   
         
         # Plataforma Inicial
         (20, HEIGHT - 100, 100, 20),
