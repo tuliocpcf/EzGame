@@ -10,9 +10,22 @@ def load_animation_frames(folder_path, scale=1.0):
     frames = []
     animation_name = path.basename(folder_path) 
     
+    # Adicione este print para ver o que o código está procurando!
+    print(f"Buscando frames na pasta: {folder_path}")
+    
     for i in range(100):
+        # Opção B: Assumindo nomes de arquivo como 'fire_0.png', 'idle_0.png', etc.
         frame_name = path.join(folder_path, f'{animation_name}_{i}.png')
         
+        # DEBUG: Imprima o caminho do primeiro arquivo que ele tenta carregar
+        if i == 0:
+            print(f"Tentativa de arquivo 0: {frame_name}")
+        
+        if not path.exists(frame_name):
+            # Se não encontrou o primeiro arquivo (i=0), a lista 'frames' estará vazia.
+            if i == 0:
+                 print(f"ERRO: Não encontrou NENHUM frame. Verifique o caminho e o nome do arquivo '{frame_name}'")
+            break
         img = pg.image.load(frame_name).convert_alpha()
         if scale != 1.0:
             img = pg.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
