@@ -91,17 +91,18 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.playing = False
-                return "quit" 
-                
+                return "quit"
+            
             # Lógica de input normal (pulo, etc.) só ocorre se o jogo não acabou
             if not self.game_over:
                 if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_SPACE:
+                    if event.key == pg.K_SPACE or event.key == pg.K_UP:
                         self.player.jump()
                         
-            # 🛑 NOVO: LÓGICA DE CLIQUE PARA A TELA FINAL
+            # Lógica de clique para o botão "Jogar Novamente"
             if self.game_over:
-                self.handle_game_over_input(event) # Chama um novo método para o botão
+                self.handle_game_over_input(event)
+                
         return "continue"
     
     def update(self):
