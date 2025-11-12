@@ -157,12 +157,13 @@ class Game:
                 self.load_level(self.level_list[self.current_level_index])
 
     def draw(self):
-        self.screen.fill(BLACK_HELL) # Fundo preto/vermelho
+        self.screen.fill(BLACK_HELL)
 
         if self.game_over:
-            self.draw_game_over_screen() # Chama o novo método de desenho
+            self.draw_game_over_screen()
         else:
             self.all_sprites.draw(self.screen)
+            self.draw_time() 
             
         pg.display.flip()
 
@@ -244,6 +245,29 @@ class Game:
                 
                 if hasattr(self, 'restart_button_rect') and self.restart_button_rect.collidepoint(mouse_pos):
                     self.reset_game()
+
+    def draw_time(self):
+        
+        # Calcula o tempo decorrido desde o início do jogo 
+        time_elapsed_ms = pg.time.get_ticks() - self.start_time
+        
+        # Converte e Formata o tempo
+        time_in_seconds = time_elapsed_ms / 1000
+        minutes = int(time_in_seconds // 60)
+        seconds = int(time_in_seconds % 60)
+        # Mostra os centésimos de segundo 
+        hundredths = int((time_in_seconds * 10) % 10) 
+        
+        formatted_time = f"TEMPO: {minutes:02d}:{seconds:02d}.{hundredths:01d}"
+        
+        # Renderiza o texto
+        font = pg.font.SysFont('arial', 32, bold=True)
+        # Use INFERNO_LARANJA para destacar o cronômetro 
+        text_surface = font.render(formatted_time, True, ORANGE_HELL)
+        
+        # Posiciona no canto superior direito 
+        text_rect = text_surface.get_rect(topright=(WIDTH - 50, 50))
+        self.screen.blit(text_surface, text_rect)
     
 if __name__ == "__main__":
     pg.mixer.pre_init(44100, -16, 2, 512)
