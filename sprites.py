@@ -298,24 +298,30 @@ class StartScreen:
         return self.start_btn_mask.get_at((rel_x, rel_y)) != 0
 
     def handle_events(self):
+        mouse_pos = pg.mouse.get_pos()
+        self._is_hover = self.start_btn_rect.collidepoint(mouse_pos)
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
-
-            elif event.type == pg.KEYDOWN:
+                self.start_game = False # Sinaliza que não é para iniciar o jogo
+                
+            # NOVO: Teclas para iniciar e fechar
+            if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.running = False
-                elif event.key in (pg.K_RETURN, pg.K_KP_ENTER):
-                    self.start_game = True # <-- 4. MUDAR AQUI
-                    self.running = False   # <-- 4. MUDAR AQUI
+                    self.start_game = False # Sinaliza que não é para iniciar o jogo
+                    
+                # 🛑 MUDANÇA AQUI: Adiciona ENTER (K_RETURN) e ESPAÇO
+                if event.key == pg.K_RETURN or event.key == pg.K_SPACE:
+                    self.running = False
+                    self.start_game = True # Inicia o jogo / vai para a próxima tela
 
-            elif event.type == pg.MOUSEMOTION:
-                self._is_hover = self._point_on_button(event.pos)
-
-            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-                if self._point_on_button(event.pos):
-                    self.start_game = True # <-- 4. MUDAR AQUI
-                    self.running = False   # <-- 4. MUDAR AQUI
+            # Botão de clique (mouse)
+            if event.type == pg.MOUSEBUTTONDOWN:
+                if self._is_hover and event.button == 1: # 1 = Botão esquerdo
+                    self.running = False
+                    self.start_game = True
 
     def draw(self):
         # Fundo

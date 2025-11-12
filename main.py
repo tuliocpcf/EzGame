@@ -96,6 +96,10 @@ class Game:
             # Lógica de input normal (pulo, etc.) só ocorre se o jogo não acabou
             if not self.game_over:
                 if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
+                        self.playing = False # Termina o loop g.run()
+                        return "menu"        # Sinaliza para voltar ao menu
+                        
                     if event.key == pg.K_SPACE or event.key == pg.K_UP:
                         self.player.jump()
                         
@@ -254,7 +258,7 @@ if __name__ == "__main__":
     pg.init()
     pg.mixer.init()
 
-    screen = pg.display.set_mode((WIDTH, HEIGHT))
+    screen = pg.display.set_mode((WIDTH, HEIGHT), pg.FULLSCREEN)    
 
     # Carrega e inicia a trilha UMA VEZ
     # Recomendo .ogg pela estabilidade no pygame
